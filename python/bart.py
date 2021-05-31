@@ -12,7 +12,7 @@ import cfl
 import os
 from wslsupport import PathCorrection
 
-def bart(nargout, cmd, *args):
+def bart(nargout, cmd, *args, path=None):
 
     if type(nargout) != int or nargout < 0:
         print("Usage: bart(<nargout>, <command>, <arguements...>)")
@@ -37,7 +37,7 @@ def bart(nargout, cmd, *args):
             else:
                 raise Exception('Environment variable TOOLBOX_PATH is not set.')
 
-    name = tmp.NamedTemporaryFile().name
+    name = tmp.NamedTemporaryFile(dir=path).name
 
     nargin = len(args)
     infiles = [name + 'in' + str(idx) for idx in range(nargin)]

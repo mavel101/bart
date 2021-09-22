@@ -357,11 +357,6 @@ CUDNN_H := -I$(CUDNN_BASE)/include
 CPPFLAGS += -DUSE_CUDNN $(CUDNN_H)
 endif
 ifeq ($(BUILDTYPE), MacOSX)
-<<<<<<< HEAD
-CUDA_L := -L$(CUDA_BASE)/lib64 -lcufft -lcudart -lcublas -m64 -lstdc++
-else
-CUDA_L := -L$(CUDA_BASE)/lib64 -lcufft -lcudart -lcublas -lstdc++ -Wl,-rpath $(CUDA_BASE)/lib64
-=======
 CUDA_L := -L$(CUDA_BASE)/$(CUDA_LIB) -lcufft -lcudart -lcublas -m64 -lstdc++
 else
 ifeq ($(CUDNN),1)
@@ -369,7 +364,6 @@ CUDA_L := -L$(CUDA_BASE)/$(CUDA_LIB) -L$(CUDNN_BASE)/$(CUDNN_LIB) -lcudnn -lcuff
 else
 CUDA_L := -L$(CUDA_BASE)/$(CUDA_LIB) -lcufft -lcudart -lcublas -lstdc++ -Wl,-rpath $(CUDA_BASE)/$(CUDA_LIB)
 endif
->>>>>>> origin/master
 endif
 else
 CUDA_H :=

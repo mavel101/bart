@@ -31,6 +31,7 @@
 #include "linops/someops.h"
 
 #include "noncart/nufft.h"
+#include "noncart/nudft.h"
 
 #include "sense/recon.h"
 #include "sense/model.h"
@@ -160,10 +161,12 @@ static const struct linop_s* sense_nc_init(const long max_dims[DIMS], const long
 		}
 	}
 
-	const struct linop_s* nufft_op = nufft_create2(DIMS, ksp_dims2, coilim_dims,
-						traj_dims, traj,
-						(weights ? wgs_dims : NULL), weights,
-						(basis ? basis_dims : NULL), basis, conf);
+	// const struct linop_s* nufft_op = nufft_create2(DIMS, ksp_dims2, coilim_dims,
+	// 					traj_dims, traj,
+	// 					(weights ? wgs_dims : NULL), weights,
+	// 					(basis ? basis_dims : NULL), basis, conf);
+
+	const struct linop_s* nudft_op = nudft_create(DIMS, FFT_FLAGS, ksp_dims2, coilim_dims, traj_dims, traj);
 
 	const struct linop_s* lop;
 
@@ -177,7 +180,7 @@ static const struct linop_s* sense_nc_init(const long max_dims[DIMS], const long
 		for (int i = 0; i < map_dims[COIL_DIM]; i++) {
 
 			const struct linop_s* maps_op = maps2_create(coilim_dims, map_dims_slc, img_dims, maps + i *  map_strs[COIL_DIM] / CFL_SIZE);
-			lops[i] = linop_chain(maps_op, nufft_op);
+			lops[i] = linop_chain(maps_op, nudft_op);
 			linop_free(maps_op);
 		}
 
@@ -186,14 +189,14 @@ static const struct linop_s* sense_nc_init(const long max_dims[DIMS], const long
 	} else {
 
 		const struct linop_s* maps_op = maps2_create(coilim_dims, map_dims, img_dims, maps);
-		lop = linop_chain(maps_op, nufft_op);
+		lop = linop_chain(maps_op, nudft_op);
 		linop_free(maps_op);
 	}
 
 	if (NULL != fft_opp)
-		*fft_opp = linop_clone(nufft_op);
+		*fft_opp = linop_clone(nudft_op);
 
-	linop_free(nufft_op);
+	linop_free(nudft_op);
 
 	return lop;
 }
